@@ -52,4 +52,4 @@ jobs:
             npm install
 
             # Restart application using PM2
-            pm2 restart aasim || pm2 start /src/server.ts --name "aasim"
+             pm2 start /src/server.ts --name "aasim"
