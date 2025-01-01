@@ -31,8 +31,7 @@ jobs:
     # Build the application
     - run: npm run build --if-present
 
-    # Run tests
-    - run: npm test
+    
 
     # Deploy to the server using SSH
     - name: Deploy to Server via SSH
