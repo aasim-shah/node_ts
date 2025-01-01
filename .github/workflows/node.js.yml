@@ -53,4 +53,4 @@ jobs:
           npm install
 
           # Restart application using PM2
-          pm2 restart my-app || pm2 start /src/server.ts --name "node-app"
+          pm2 restart all || pm2 start /src/server.ts --name "node-app"
