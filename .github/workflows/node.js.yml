@@ -1,7 +1,4 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
+name: Node.js CI and Deploy
 
 on:
   push:
@@ -10,22 +7,52 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
+    # Checkout code
     - uses: actions/checkout@v4
+
+    # Set up Node.js
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
+    # Install dependencies
     - run: npm ci
+
+    # Build the application
     - run: npm run build --if-present
+
+    # Run tests
     - run: npm test
+
+    # Deploy to the server using SSH
+    - name: Deploy to Server via SSH
+      if: ${{ success() }} # Only run if previous steps succeed
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 22
+        script: |
+          # Navigate to the app directory or clone repo if not exists
+          if [ ! -d "/var/www/my-app" ]; then
+            git clone https://github.com/${{ github.repository }} /var/www/my-app
+          fi
+          cd /var/www/my-app
+
+          # Pull latest changes and install dependencies
+          git pull origin master
+          npm install
+
+          # Restart application using PM2
+          pm2 restart all || pm2 start app.js --name "my-app"
