@@ -9,7 +9,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
 
     strategy:
       matrix:
@@ -55,6 +54,11 @@ jobs:
             # # Restart application using PM2
             #  pm2 start src/server.ts --name "aasim"
 
-            pm2 start npm --name "aasim" -- start
-
-
+            # pm2 start npm --name "aasim" -- start
+            if pm2 list | grep -q "aasim"; then
+             echo "PM2 process 'aasim' is already running. Restarting it..."
+             pm2 restart aasim
+            else
+             echo "PM2 process 'aasim' is not running. Starting it..."
+             pm2 start npm --name "aasim" -- start
+            fi
