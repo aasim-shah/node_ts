@@ -4,6 +4,7 @@ import helmet from "helmet";
 import cors from "cors";
 import { port, corsOrigin } from "./config/constants";
 import router from "./routes/index";
+import { ResSuccess } from "./utils/responses";
 
 dotenv.config({
   path:
@@ -27,7 +28,7 @@ app.use(express.json());
 app.use("/api/v1/", router);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello, TypeScript with Express!");
+  new ResSuccess(res, "Welcome to the API");
 });
 
 app.listen(port, () => {
