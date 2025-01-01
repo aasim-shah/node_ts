@@ -43,14 +43,14 @@ jobs:
         port: 22
         script: |
           # Navigate to the app directory or clone repo if not exists
-          if [ ! -d "/var/www/my-app" ]; then
-            git clone https://github.com/${{ github.repository }} /var/www/my-app
+          if [ ! -d "/var/www/node-ts-testing" ]; then
+            git clone https://github.com/${{ github.repository }} /var/www/node-ts-testing
           fi
-          cd /var/www/my-app
+          cd /var/www/node-ts-testing
 
           # Pull latest changes and install dependencies
           git pull origin master
           npm install
 
           # Restart application using PM2
-          pm2 restart my-app || pm2 start src/server.ts --name "my-app"
+          pm2 restart my-app || pm2 start src/server.ts --name "node-app"
